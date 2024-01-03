@@ -4,7 +4,10 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';bcrypt
 import { validationResult } from 'express-validator';
 import { registerValidation } from './validatations/auth.js';
+import checkAuth from './validatations/checkAuth.js';
 import UserModel from './models/User.js'
+import CategoryModel from './models/Category.js'
+import BrandModel from './models/Brand.js'
 const app = express();
 
 mongoose
@@ -89,6 +92,44 @@ app.post('/login', async (req, res) => {
         })
     }
 })
+
+app.post('/brand', checkAuth, async (req, res) => {
+    try {
+        const doc = new BrandModel({
+            label: req.body.label
+        })
+
+        const brand = await doc.save();
+
+        res.json({
+            message: 'Бренд добавлен'
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось добавить!'
+        })
+    }
+});
+
+app.post('/category', checkAuth, async (req, res) => {
+    try {
+        const doc = new CategoryModel({
+            label: req.body.label
+        })
+
+        const category = await doc.save();
+
+        res.json({
+            message: 'Категория добавлена'
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: 'Не удалось добавить!'
+        })
+    }
+});
 
 app.listen(8080, (err) => {
     if (err) {
