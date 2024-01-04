@@ -1,21 +1,19 @@
 import express from 'express'
-import jwt from 'jsonwebtoken'
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';bcrypt
-import { validationResult } from 'express-validator';
 import { registerValidation } from './validatations/auth.js';
 import checkAuth from './validatations/checkAuth.js';
-import UserModel from './models/User.js'
-import CategoryModel from './models/Category.js'
-import BrandModel from './models/Brand.js'
+import { authorizeUser, registerUser } from './controllers/UserController.js';
+import { addBrand, removeBrand } from './controllers/BrandController.js';
+import { addCategory, removeCategory } from './controllers/CategoryController.js';
+import { addItem, getItemById, getItems, removeItem } from './controllers/ItemController.js';
+
 const app = express();
 
-mongoose
-.connect(
-    'mongodb+srv://ilia:12345@cluster0.sq3lurj.mongodb.net/best-reps-db'
-).then(() => {
+mongoose.connect('mongodb+srv://ilia:12345@cluster0.sq3lurj.mongodb.net/best-reps-db')
+.then(() => {
     console.log('DB ok');
-}).catch((err) => {
+})
+.catch((err) => {
     console.log('DB err', err);
 })
 
@@ -25,113 +23,28 @@ app.get('/', (req, res) => {
     res.send('Hello world!');
 });
 
-app.post('/register', registerValidation, async (req, res) => {
-    try {
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-            return res.status(400).json(errors.array());
-        }
-    
-        const password = req.body.password;
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(password, salt);
-    
-        const doc = new UserModel({
-            login: req.body.login,
-            password: passwordHash
-        })
+app.post('/register', registerValidation, registerUser);
 
-        const user = await doc.save();
+app.post('/login', authorizeUser);
 
-        const token = jwt.sign({
-            _id: user._id
-        }, 'best-reps-be')
-    
-        res.json({
-            ...user._doc,
-            token
-        })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: 'Не удалось зарегестрироваться!'
-        })
-    }
-});
+app.post('/brand', checkAuth, addBrand);
 
-app.post('/login', async (req, res) => {
-    try{
-        const user  = await UserModel.findOne({login: req.body.login});
+app.delete('/brand', checkAuth, removeBrand);
 
-        if(!user) {
-            return res.status(404).json({
-                message: 'Неверный логин или пароль'
-            })
-        }
-        
-        const isValidPass = await bcrypt.compare(req.body.password, user._doc.password);
+app.post('/category', checkAuth, addCategory);
 
-        if(!isValidPass){
-            return res.status(404).json({
-                message: 'Неверный логин или пароль'
-            })
-        }
+app.delete('/category', checkAuth, removeCategory);
 
-        const token = jwt.sign({
-            _id: user._id
-        }, 'best-reps-be')
-        
-        res.json({
-            ...user._doc,
-            token
-        })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: 'Не удалось авторизоваться!'
-        })
-    }
-})
+app.post('/items', checkAuth, addItem);
 
-app.post('/brand', checkAuth, async (req, res) => {
-    try {
-        const doc = new BrandModel({
-            label: req.body.label
-        })
+app.delete('/items', checkAuth, removeItem);
 
-        const brand = await doc.save();
+app.get('/items', getItems);
 
-        res.json({
-            message: 'Бренд добавлен'
-        })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: 'Не удалось добавить!'
-        })
-    }
-});
-
-app.post('/category', checkAuth, async (req, res) => {
-    try {
-        const doc = new CategoryModel({
-            label: req.body.label
-        })
-
-        const category = await doc.save();
-
-        res.json({
-            message: 'Категория добавлена'
-        })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: 'Не удалось добавить!'
-        })
-    }
-});
+app.get('/items/:id', getItemById);
 
 app.listen(8080, (err) => {
+
     if (err) {
         return console.log(err);
     }
