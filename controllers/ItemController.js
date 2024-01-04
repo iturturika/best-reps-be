@@ -7,6 +7,8 @@ export const addItem = async (req, res) => {
             images: req.body.images,
             price: req.body.price,
             url: req.body.url,
+            brand: req.body.brand,
+            category: req.body.category,
         })
 
         const item = await doc.save();
@@ -43,7 +45,8 @@ export const removeItem = async (req, res) => {
 
 export const getItems = async (req, res) => {
     try {
-        const item = await ItemModel.find();
+        const filter = req.query;
+        const item = await ItemModel.find(filter);
 
         if(!item || item.length === 0){
             return res.status(404).json({
