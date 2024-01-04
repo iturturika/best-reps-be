@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 import { registerValidation } from './validatations/auth.js';
 import checkAuth from './validatations/checkAuth.js';
 import { authorizeUser, registerUser } from './controllers/UserController.js';
-import { addBrand, removeBrand } from './controllers/BrandController.js';
-import { addCategory, removeCategory } from './controllers/CategoryController.js';
+import { addBrand, getBrands, removeBrand } from './controllers/BrandController.js';
+import { addCategory, getCategories, removeCategory } from './controllers/CategoryController.js';
 import { addItem, getItemById, getItems, removeItem } from './controllers/ItemController.js';
 import dotenv from 'dotenv';
 
@@ -41,9 +41,13 @@ app.post('/brand', checkAuth, addBrand);
 
 app.delete('/brand', checkAuth, removeBrand);
 
+app.get('/brand', getBrands);
+
 app.post('/category', checkAuth, addCategory);
 
 app.delete('/category', checkAuth, removeCategory);
+
+app.get('/category', getCategories);
 
 app.post('/items', checkAuth, addItem);
 

@@ -36,4 +36,22 @@ export const removeBrand = async (req, res) => {
             message: 'Не удалось удалить!'
         })
     }
-  };
+};
+
+export const getBrands = async (req, res) => {
+    try {
+        const brands = await BrandModel.find();
+
+        if(!brands || brands.length === 0){
+            return res.status(404).json({
+                message: 'Список пуст!'
+            })
+        }
+
+        res.json(brands);
+    } catch (err) {
+        res.status(500).json({
+            message: 'Не удалось найти список!'
+        })
+    }
+}
