@@ -23,7 +23,7 @@ export const addItem = async (req, res) => {
 
 export const removeItem = async (req, res) => {
     try {
-      const removedDoc = await ItemModel.findByIdAndRemove(req.body.id);
+      const removedDoc = await ItemModel.findByIdAndDelete(req.body.id);
   
       if (!removedDoc) {
         return res.status(404).json({
@@ -61,7 +61,7 @@ export const getItems = async (req, res) => {
 
 export const getItemById = async (req, res) => {
     try {
-        const item = await ItemModel.findOne({id: req.params.id});
+        const item = await ItemModel.findById(req.params.id);
         
         if(!item || item.length === 0){
             return res.status(404).json({

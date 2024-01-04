@@ -20,7 +20,7 @@ export const addBrand = async (req, res) => {
 
 export const removeBrand = async (req, res) => {
     try {
-      const removedDoc = await BrandModel.findByIdAndRemove(req.body.id);
+      const removedDoc = await BrandModel.findByIdAndDelete(req.body.id);
   
       if (!removedDoc) {
         return res.status(404).json({

@@ -20,7 +20,7 @@ export const addCategory = async (req, res) => {
 
 export const removeCategory = async (req, res) => {
     try {
-      const removedDoc = await CategoryModel.findByIdAndRemove(req.body.id);
+      const removedDoc = await CategoryModel.findByIdAndDelete(req.body.id);
   
       if (!removedDoc) {
         return res.status(404).json({
