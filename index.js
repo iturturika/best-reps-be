@@ -6,16 +6,26 @@ import { authorizeUser, registerUser } from './controllers/UserController.js';
 import { addBrand, removeBrand } from './controllers/BrandController.js';
 import { addCategory, removeCategory } from './controllers/CategoryController.js';
 import { addItem, getItemById, getItems, removeItem } from './controllers/ItemController.js';
+import dotenv from 'dotenv';
 
 const app = express();
 
-mongoose.connect('mongodb+srv://ilia:12345@cluster0.sq3lurj.mongodb.net/best-reps-db')
+dotenv.config();
+
+mongoose.connect(process.env.MONGO_DB)
 .then(() => {
     console.log('DB ok');
 })
 .catch((err) => {
     console.log('DB err', err);
 })
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', process.env.FE_URL);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 
 app.use(express.json());
 
@@ -43,7 +53,7 @@ app.get('/items', getItems);
 
 app.get('/items/:id', getItemById);
 
-app.listen(8080, (err) => {
+app.listen(process.env.PORT, (err) => {
 
     if (err) {
         return console.log(err);
