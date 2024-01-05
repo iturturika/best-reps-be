@@ -64,7 +64,6 @@ export const authorizeUser = async (req, res) => {
             token
         })
     } catch (err) {
-        console.log(err);
         res.status(500).json({
             message: 'Не удалось авторизоваться!'
         })

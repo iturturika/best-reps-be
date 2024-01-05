@@ -7,6 +7,7 @@ import { addBrand, getBrands, removeBrand } from './controllers/BrandController.
 import { addCategory, getCategories, removeCategory } from './controllers/CategoryController.js';
 import { addItem, getItemById, getItems, removeItem } from './controllers/ItemController.js';
 import dotenv from 'dotenv';
+import cors from 'cors';
 
 const app = express();
 
@@ -20,12 +21,12 @@ mongoose.connect(process.env.MONGO_DB)
     console.log('DB err', err);
 })
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', process.env.FE_URL);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
+const corsOptions = {
+    origin: process.env.FE_URL, // Укажите домен вашего сайта
+    optionsSuccessStatus: 200, // некоторые браузеры (e.g., IE11) предпочитают видеть это
+  };
+  
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
