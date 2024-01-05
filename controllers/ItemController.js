@@ -46,6 +46,13 @@ export const removeItem = async (req, res) => {
 export const getItems = async (req, res) => {
     try {
         const filter = req.query;
+
+        Object.keys(filter).forEach(key => {
+            if (filter[key] === "") {
+              delete filter[key];
+            }
+        });
+
         const item = await ItemModel.find(filter);
 
         if(!item || item.length === 0){
