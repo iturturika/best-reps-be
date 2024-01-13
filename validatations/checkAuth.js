@@ -7,8 +7,9 @@ const checkAuth = (req, res, next) => {
         try{
             const decoded = jwt.verify(token, 'best-reps-be');
 
-            req.userId = decoded._id;
+            req.userId === decoded._id;
             next();
+
         } catch(err) {
             return res.status(403).json({
                 message: 'Нет доступа'
